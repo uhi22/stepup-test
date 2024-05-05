@@ -7,8 +7,8 @@ void setup() {
 
 void loop() {
   digitalWrite(PIN_PWM, 1);
-  delayMicroseconds(10);
+  delayMicroseconds(5);
   digitalWrite(PIN_PWM, 0);
-  delayMicroseconds(10);
-  //delay(100);
+  delayMicroseconds(20);
+  //delay(1);
 }
