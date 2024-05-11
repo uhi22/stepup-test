@@ -72,6 +72,11 @@ would produce a lot of heat if the voltage is further increased.
 How to avoid the large stray-inductance-caused-oscillation?
 Some ideas are mentioned here: https://www.joretronik.de/Web_NT_Buch/Kap9/Kapitel9.html
 
+* 10nF + 10 ohms over the primary winding dampens the 30MHz quite well.
+* additionally, D + (100nF || 12kohm) flattens the initial spike a little bit. D is a 1N5822.
+
+Result details in Excel. Summary: ~55% efficiency. >4W output reached.
+
 ## References
 
 https://www.joretronik.de/Web_NT_Buch/Kap7_2/Kapitel7_2.html
