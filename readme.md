@@ -52,6 +52,26 @@ Limiting factors regarding more output power:
 
 ![2.5W output](doc/2024-05-05_core_EI35_with_additional_0.1mm_gap_output500V_5mA.jpg)
 
+## Level 4: Fixing the shunt and load
+
+* Shunt decreased to 50 mOhm (consisting of 20 x 1 ohm).
+* Load resistor 8*12k + 3k9
+
+With this setup we get easily 500V DC, which is 2.5W output without smoke.
+The limiting element when increasing the input voltage further, is now the FET, which runs into avalance due the stray inductance, and produces heat until it de-solders. (auto-protecting ;-)
+
+## Level 5: The stray inductance
+
+For N1 we use instead of one now three windings in parallel, distributed over the core, to reduce the stray inductance. With this measure, the resonance frequency in the turn-off phase increases from 16 MHz to 30 MHz.
+![stray inductance oscillation with one winding](doc/2024-05-11_stray_inductance_16MHz.jpg)
+![stray inductance oscillation with three parallel windings](doc/2024-05-11_stray_inductance_30MHz.jpg)
+
+Nevertheless, the voltage spike at turn-off of the FET nearly reaches the avalance voltage, which
+would produce a lot of heat if the voltage is further increased.
+
+How to avoid the large stray-inductance-caused-oscillation?
+Some ideas are mentioned here: https://www.joretronik.de/Web_NT_Buch/Kap9/Kapitel9.html
+
 ## References
 
 https://www.joretronik.de/Web_NT_Buch/Kap7_2/Kapitel7_2.html
