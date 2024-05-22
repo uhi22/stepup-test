@@ -77,6 +77,45 @@ Some ideas are mentioned here: https://www.joretronik.de/Web_NT_Buch/Kap9/Kapite
 
 Result details in Excel. Summary: ~55% efficiency. >4W output reached.
 
+## Level 6: The gate driver
+
+Driving the FET gate directly from the arduino digital output is not ideal, because the arduino has limited
+output current capabilities. This leads to slow transitions between the on- and off-phase of the FET,
+which causes loss. Faster transitions should lead to less loss.
+With arduino output, the transition time (from 5V to 1V) is ~150ns.
+When using 7 high-speed-CMOS gates in parallel (74HC08), the transition time goes down to ~60ns.
+Surprisingly, the efficiency does not increase. This shows, that the heat is and was produced somewhere else, not in the FET.
+
+Result details in Excel. Summary: The speed of the gate driver is sufficient.
+
+## Level 7: The high voltage measuring
+
+For isolated measurement of the output voltage, we use the "muehlpower board" from here: https://openinverter.org/forum/viewtopic.php?p=41641#p41641
+"Based on the isolated amplifier AMC3302DWE from Texas Instruments, it outputs an low impedance analog voltage between 1.42V and 4.8V corresponding to the input voltage of 0V-500V. Isolation is over 2000V, power supply is only required on the low voltage side."
+
+## Level 8: Regulated output voltage
+
+### Which op-amp?
+- TL084? No. With 5V supply the common mode voltage range bad (recommented 4V distance to the supply rails).
+- LM324? No. Works with single 5V, has 0V input tolerance, but the common-mode range ends at VCC-2V.
+- LM358N? Ok. Works with 5V supply. Input common-mode voltage range includes ground until Vcc-1.5V. Large output voltage swing:0V DC to Vcc-1,5V DC.
+https://cdn-reichelt.de/documents/datenblatt/A200/358_ESTEK.pdf
+
+### Schematic
+- output of the muehlpower board is divided by 5k6 / (5k6+8k2), to not overshoot the common-mode-limit of the op-amp.
+- This divider feeds the IN- of the op-amp.
+- A poti between 5V and GND feeds the IN+ of the op-amp.
+- To get a hysteresis, feedback of 220k from OUT to IN+.
+- The OUT of the op-amp goes to the AND in the 74HC08. The other side of the AND is driven by the Arduino PWM.
+- The output of the AND goes to the 7 74HC08 gates in parallel, which are the gate driver.
+
+Results: good regulation. Details in Excel.
+
+## Level 9: Software-adjustable output voltage
+
+## Level 10: Overcurrent protection
+
+
 ## References
 
 https://www.joretronik.de/Web_NT_Buch/Kap7_2/Kapitel7_2.html
