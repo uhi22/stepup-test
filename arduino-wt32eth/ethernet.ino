@@ -57,7 +57,7 @@ esp_err_t myEthernetReceiveCallback(esp_eth_handle_t hdl, uint8_t *buffer, uint3
   showAsHex(myreceivebuffer, myreceivebufferLen, "eth.myreceivebuffer");   
   if (etherType == 0x88E1) { /* it is a HomePlug message */
     //Serial.println("Its a HomePlug message.");
-    //evaluateReceivedHomeplugPacket();
+    evaluateReceivedHomeplugPacket();
   } else if (etherType == 0x86dd) { /* it is an IPv6 frame */
     //Serial.println("Its a IPv6 message.");
     //ipv6_evaluateReceivedPacket();

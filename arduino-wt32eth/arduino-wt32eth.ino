@@ -16,6 +16,7 @@ TwoWire myI2C = TwoWire(1);
 Adafruit_MCP4725 dac;
 
 uint8_t testData0;
+uint16_t targetVoltage_0V1;
 
 /**********************************************************/
 /* The logging macros and functions */
@@ -78,16 +79,12 @@ void setup() {
 }
 
 void loop() { 
-    int32_t counter;
-    // Run through the full 12-bit scale for a triangle wave
-    for (counter = 0; counter < 4095; counter+=2) {
-      dac.setVoltage(counter, false);
-      delay(1);
-    }
-    for (counter = 4095; counter > 0; counter-=2) {
-      dac.setVoltage(counter, false);
-      delay(1);
-    }
-    sendTestFrame();
-    testData0++;
+    int32_t tmp;
+    tmp = targetVoltage_0V1;
+    tmp += 100;
+    if (tmp>4095) tmp=4095;
+    dac.setVoltage(tmp, false);
+    delay(10);
+    //sendTestFrame();
+    //testData0++;
 }

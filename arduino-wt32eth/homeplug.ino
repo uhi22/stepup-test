@@ -246,26 +246,21 @@ void composeNmbcSoundInd(void) {
     }
 }
 
-void evaluateAttenCharInd(void) {
-  uint8_t i;  
-  addToTrace("[PEVSLAC] received ATTEN_CHAR.IND");
-  if (iAmPev==1) {
-        //addToTrace("[PEVSLAC] received AttenCharInd in state " + str(pevSequenceState))
-        if (pevSequenceState==STATE_WAIT_FOR_ATTEN_CHAR_IND) { // we were waiting for the AttenCharInd
-            //todo: Handle the case when we receive multiple responses from different chargers.
-            //      Wait a certain time, and compare the attenuation profiles. Decide for the nearest charger.
-            //Take the MAC of the charger from the frame, and store it for later use.
-            for (i=0; i<6; i++) {
-                evseMac[i] = myreceivebuffer[6+i]; // source MAC starts at offset 6
-            }
-            AttenCharIndNumberOfSounds = myreceivebuffer[69];
-            //addToTrace("[PEVSLAC] number of sounds reported by the EVSE (should be 10): " + str(AttenCharIndNumberOfSounds)) 
-            composeAttenCharRsp();
-            addToTrace("[PEVSLAC] transmitting ATTEN_CHAR.RSP...");
-            myEthTransmit();               
-            pevSequenceState=STATE_ATTEN_CHAR_IND_RECEIVED; // enter next state. Will be handled in the cyclic runSlacSequencer
-		    }
-	}
+void evaluateAttenCharIndAsSpecialMessage(void) {
+  uint16_t u1, u2, i1, i2;  
+  addToTrace("received ATTEN_CHAR.IND, treating as special message");
+  if ((myreceivebuffer[71]==0xAF) && (myreceivebuffer[72]==0xFE) && (myreceivebuffer[73]==0xDC)) {
+    addToTrace("special message header is correct");
+    u1 = myreceivebuffer[74]; /* MSB */ u1<<=8;
+    u1 |= myreceivebuffer[75]; /* LSB */
+    u2 = myreceivebuffer[76]; /* MSB */ u2<<=8;
+    u2 |= myreceivebuffer[77]; /* LSB */
+    //addToTrace("u1=" + String(u1) + " u2=" + String(u2));
+    if (u1==u2) {
+      targetVoltage_0V1 = u1;
+      addToTrace("targetVoltage_0V1=" + String(targetVoltage_0V1));
+    }
+  }
 }
 
 void composeAttenCharRsp(void) {
@@ -452,12 +447,7 @@ void runSdpStateMachine(void) {
 
 void evaluateReceivedHomeplugPacket(void) {
   switch (getManagementMessageType()) {
-    case CM_GET_KEY + MMTYPE_CNF:    evaluateGetKeyCnf();    break;   
-    case CM_SLAC_MATCH + MMTYPE_CNF: evaluateSlacMatchCnf(); break;
-    case CM_SLAC_PARAM + MMTYPE_CNF: evaluateSlacParamCnf(); break;
-    case CM_ATTEN_CHAR + MMTYPE_IND: evaluateAttenCharInd(); break;
-    case CM_SET_KEY + MMTYPE_CNF:    evaluateSetKeyCnf();    break;
-    case CM_GET_SW + MMTYPE_CNF:     evaluateGetSwCnf();     break;
+    case CM_ATTEN_CHAR + MMTYPE_IND: evaluateAttenCharIndAsSpecialMessage(); break;
   }
 }
 
