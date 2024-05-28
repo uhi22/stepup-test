@@ -4,6 +4,8 @@
 
 ![basic schematic of an isolated step up converter](doc/2024-05-05_isolated_stepup_basic_schematic.jpg)
 
+To create the pulses, a simple arduino project is used: https://github.com/uhi22/stepup-test/tree/main/arduino-stepup-test
+
 ![on phase, no saturation](doc/2024-05-02_core_EI35_no_saturation.jpg)
 
 ![on phase, saturation of the core](doc/2024-05-02_core_EI35_saturation.jpg)
@@ -113,8 +115,28 @@ Results: good regulation. Details in Excel.
 
 ## Level 9: Software-adjustable output voltage
 
+To control the output voltage from PC, the core element is an ESP32 microcontroller, more precise a WT32-ETH01 board. This provides an I2C bus
+where we have an D-A-converter (MCP4725, 12 bits) and an A-D-converter (ADS1015, 4 channel, 12 bits).
+The DAC provides 0 to 3.3V. This feeds via 2k7 the IN+ of the op-amp.
+The ADC is connected to the divided muehlpower voltage, this means it sees the same voltage as the IN- of the op-amp.
+The ethernet port of the WT32-ETH01 connects to a homeplug modem, which is configured as PEV, so that it is able to receive
+the SLAC messages which are sent by an EVSE controller. Re-using some SLAC messages has the advantage, that no pairing
+of the PLC modems is necessary.
+
+On PC, the pyPLC (https://github.com/uhi22/pyPLC) is used in EvseMode to communicate with the WT32-ETH01 via PLC. It can set the target voltage and receive the present voltage.
+The software on the WT32-ETH01 is an arduino project, https://github.com/uhi22/stepup-test/tree/main/arduino-wt32eth.
+
+Results: pyPLC controls the physical voltage during the precharge phase of a CCS charging session. pyPLC displays the measured voltage.
+
 ## Level 10: Overcurrent protection
 
+
+## Level 11: Current Path Optimization
+
+The relatively thin wires, together with multiple centimeters length, create a certain loss. The following measures should improve this:
+* Use thicker wires for the primary winding, and more in parallel.
+* Use thicker wire for the secondary winding.
+* Make the lines between transformer, transistor, shunt and capacitors as short as possible and thick.
 
 ## References
 
