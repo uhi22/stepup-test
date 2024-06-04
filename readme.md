@@ -88,12 +88,16 @@ With arduino output, the transition time (from 5V to 1V) is ~150ns.
 When using 7 high-speed-CMOS gates in parallel (74HC08), the transition time goes down to ~60ns.
 Surprisingly, the efficiency does not increase. This shows, that the heat is and was produced somewhere else, not in the FET.
 
+![2024-06-04_gate_driver](doc/2024-06-04_gate_driver.jpg)
+
 Result details in Excel. Summary: The speed of the gate driver is sufficient.
 
 ## Level 7: The high voltage measuring
 
 For isolated measurement of the output voltage, we use the "muehlpower board" from here: https://openinverter.org/forum/viewtopic.php?p=41641#p41641
 "Based on the isolated amplifier AMC3302DWE from Texas Instruments, it outputs an low impedance analog voltage between 1.42V and 4.8V corresponding to the input voltage of 0V-500V. Isolation is over 2000V, power supply is only required on the low voltage side."
+
+![2024-06-04_isolated_high_voltage_measurement_muehlpower](doc/2024-06-04_isolated_high_voltage_measurement_muehlpower.jpg)
 
 ## Level 8: Regulated output voltage
 
@@ -111,6 +115,8 @@ https://cdn-reichelt.de/documents/datenblatt/A200/358_ESTEK.pdf
 - The OUT of the op-amp goes to the AND in the 74HC08. The other side of the AND is driven by the Arduino PWM.
 - The output of the AND goes to the 7 74HC08 gates in parallel, which are the gate driver.
 
+![2024-06-04_voltage_regulation_opamp](doc/2024-06-04_voltage_regulation_opamp.jpg)
+
 Results: good regulation. Details in Excel.
 
 ## Level 9: Software-adjustable output voltage
@@ -122,6 +128,8 @@ The ADC is connected to the divided muehlpower voltage, this means it sees the s
 The ethernet port of the WT32-ETH01 connects to a homeplug modem, which is configured as PEV, so that it is able to receive
 the SLAC messages which are sent by an EVSE controller. Re-using some SLAC messages has the advantage, that no pairing
 of the PLC modems is necessary.
+
+![2024-06-04_WT32_with_modem_and_ADC_DAC](doc/2024-06-04_WT32_with_modem_and_ADC_DAC.jpg)
 
 On PC, the pyPLC (https://github.com/uhi22/pyPLC) is used in EvseMode to communicate with the WT32-ETH01 via PLC. It can set the target voltage and receive the present voltage.
 The software on the WT32-ETH01 is an arduino project, https://github.com/uhi22/stepup-test/tree/main/arduino-wt32eth.
@@ -137,6 +145,19 @@ The relatively thin wires, together with multiple centimeters length, create a c
 * Use thicker wires for the primary winding, and more in parallel.
 * Use thicker wire for the secondary winding.
 * Make the lines between transformer, transistor, shunt and capacitors as short as possible and thick.
+
+Before:
+![2024-06-04_inductor_thin_wires](doc/2024-06-04_inductor_thin_wires.jpg)
+
+After:
+![2024-06-04_inductor_thick_wires](doc/2024-06-04_inductor_thick_wires.jpg)
+
+
+Result: No increase of efficency at all. Still 63% at 5V in and 400V/4mA out.
+
+## Level 12: Shunt removal -> less loss
+
+By bridging the 50mOhm shunt, the efficiency increases from 63% to 71% at 5V in and 400V/4mA out.
 
 ## References
 
